@@ -4,20 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+    <div class="container home-container">
+        <% if (user) { %>
+            <div class="welcome-message">
+                <h1>Hi <%= user.username %>!</h1>
+                <p>Welcome back to the app!</p>
+            </div>
+            <a href="/auth/sign-out" class="btn">Sign Out</a>
+        <% } else { %>
+            <h1>Hi guest!</h1>
+            <p>Welcome to the app!</p>
+            <div class="auth-options">
+                <a href="/auth/sign-in" class="btn">Sign In</a>
+                <p class="or-divider">or</p>
+                <a href="/auth/sign-up" class="btn">Sign Up</a>
+            </div>
+        <% } %>
 
-<% if (user) { %>
-    <h1>Hi <%= user %>!</h1>
-    <p>Welcome back to the app!</p>
-    <a href="/auth/sign-out">Sign Out</a>
-<% } else { %>
-    <h1>Hi guest!</h1>
-    <p>Welcome to the app!</p>
-    <a href="/auth/sign-in">Sign In</a>
-    <p>or</p>
-    <a href="/auth/sign-up">Sign Up</a>
-<% } %>
-
+        <p><a href="/vip-lounge" class="vip-link">Get into the VIP Users Only lounge!</a></p>
+    </div>
 </body>
 </html>

@@ -22,11 +22,11 @@ router.post("/sign-up", async (req, res) => {
     console.log(req.body);
 
     if (UserInDataBase) {
-        return res.send("Username already exists, please choose another one.");
+        return res.send("Username already exists, please choose another one. <a href=\"/auth/sign-up\">Try again</a>");
     }
 
     if (req.body.password !== req.body.confirmPassword) {
-        return res.send("Passwords do not match.");
+        return res.send("Passwords do not match. <a href=\"/auth/sign-up\">Try again</a>");
     }
 
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -35,24 +35,33 @@ router.post("/sign-up", async (req, res) => {
         password: hashedPassword
     });
 
-    // Set session for the new user
-    req.session.username = newUser.username;
+    // Set session for the new user (automatically sign them in)
+    req.session.user = {
+        username: newUser.username,
+    };
     
-    res.redirect("/");
+    req.session.save(() => {
+        res.redirect("/");
+    });
 });
 
 router.post("/sign-in", async (req, res) => {
     const UserInDataBase = await User.findOne({ username: req.body.username });
     if (!UserInDataBase) {
-        return res.send("User not found");
+        return res.send("User not found <a href=\"/auth/sign-in\">Try again</a>");
     }
     const validPassword = await bcrypt.compare(req.body.password, UserInDataBase.password);
     if (!validPassword) {
-        return res.send("Invalid password");
+        return res.send('Invalid password. <a href="/auth/sign-in">Try again</a>');
     } else {
         // Set session for signed in user
-        req.session.username = UserInDataBase.username;
-        return res.redirect("/");
+        req.session.user = {
+            username: UserInDataBase.username,
+        };
+        
+        req.session.save(() => {
+            res.redirect("/");
+        });
     }
 });
 
