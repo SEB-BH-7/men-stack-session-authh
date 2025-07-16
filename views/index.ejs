@@ -6,9 +6,18 @@
     <title><%= title %></title>
 </head>
 <body>
-    <h1><%= title %></h1>
-    <p>Welcome to the MEN Stack Session Authentication App!</p>
+
+<% if (user) { %>
+    <h1>Hi <%= user %>!</h1>
+    <p>Welcome back to the app!</p>
+    <a href="/auth/sign-out">Sign Out</a>
+<% } else { %>
+    <h1>Hi guest!</h1>
+    <p>Welcome to the app!</p>
     <a href="/auth/sign-in">Sign In</a>
+    <p>or</p>
     <a href="/auth/sign-up">Sign Up</a>
+<% } %>
+
 </body>
 </html>

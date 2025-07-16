@@ -30,9 +30,15 @@ router.post("/sign-up", async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const newUser = await User.create(req.body);
+    const newUser = await User.create({
+        username: req.body.username,
+        password: hashedPassword
+    });
 
-    res.send("form submitted");
+    // Set session for the new user
+    req.session.username = newUser.username;
+    
+    res.redirect("/");
 });
 
 router.post("/sign-in", async (req, res) => {
@@ -40,12 +46,24 @@ router.post("/sign-in", async (req, res) => {
     if (!UserInDataBase) {
         return res.send("User not found");
     }
-    const validPassword = bcrypt.compare(req.body.password, UserInDataBase.password);
+    const validPassword = await bcrypt.compare(req.body.password, UserInDataBase.password);
     if (!validPassword) {
         return res.send("Invalid password");
     } else {
-        return res.send("User signed in successfully");
+        // Set session for signed in user
+        req.session.username = UserInDataBase.username;
+        return res.redirect("/");
     }
+});
+
+// Sign out route
+router.get("/sign-out", (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error(err);
+        }
+        res.redirect("/");
+    });
 });
 
 module.exports = router;
